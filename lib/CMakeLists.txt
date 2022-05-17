@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(game-of-life-lib)
+project(GameOfLifeLib)
 
 set(CMAKE_CXX_STANDARD 20)
 

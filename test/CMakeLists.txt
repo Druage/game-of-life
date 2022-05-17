@@ -5,4 +5,4 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_executable(${PROJECT_NAME} GameOfLifeTest.cpp include/catch.hpp include/utils.h)
 
-target_link_libraries(${PROJECT_NAME} game-of-life-lib)
+target_link_libraries(${PROJECT_NAME} GameOfLifeLib)
