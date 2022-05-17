@@ -3,6 +3,13 @@
 
 #include "catch.hpp"
 #include "../GameOfLife_T.h"
+#include "utils/utils.h"
+
+using namespace test;
+
+TEST_CASE("The Game Of Life", "[Rules]") {
+    GameOfLife gameOfLife{};
+
 
 /*
  * 0 | 0 0 0 0 0
@@ -14,48 +21,11 @@
  *     0 1 2 3 4
  */
 
-const int WIDTH = 5;
-const int HEIGHT = 5;
 
-using GameOfLife = GameOfLife_T<WIDTH, HEIGHT>;
-
-bool containsAll(GameOfLife &state, int expected) {
-    for (auto row: state.gameGrid) {
-        for (auto cell: row) {
-            if (cell != expected) {
-                return false;
-            }
-        }
+    SECTION("The grid is the correct size and initialized to 0") {
+        REQUIRE(gameOfLife.gameGrid.size() * gameOfLife.gameGrid.front().size() == WIDTH * HEIGHT);
+        REQUIRE(containsAll(gameOfLife, 0));
     }
-
-    return true;
-}
-
-bool containsOnly(GameOfLife &state, std::set<std::pair<int, int>> values) {
-
-    int sum = 0;
-    for (int w = 0; w < WIDTH; ++w) {
-        for (int h = 0; h < HEIGHT; ++h) {
-            const auto cell = state.gameGrid[w][h];
-            if (cell) {
-                const auto containsCellInValues = values.find(std::pair<int, int>(w, h)) != values.end();
-                if (!containsCellInValues) {
-                    return false;
-                }
-                sum += cell;
-            }
-        }
-    }
-
-    return sum == values.size();
-}
-
-TEST_CASE("The grid is the correct size and initialized to 0") {
-    GameOfLife gameOfLife{};
-
-    REQUIRE(gameOfLife.gameGrid.size() * gameOfLife.gameGrid.front().size() == WIDTH * HEIGHT);
-    REQUIRE(containsAll(gameOfLife, 0));
-}
 
 /*
  * 0 | 0 0 0 0 0
@@ -67,21 +37,19 @@ TEST_CASE("The grid is the correct size and initialized to 0") {
  *     0 1 2 3 4
  */
 
-TEST_CASE("The grid can be seeded") {
-    GameOfLife gameOfLife{};
+    SECTION("The grid can be seeded") {
 
+        gameOfLife.seed({
+                                {1, 1},
+                                {2, 1}
+                        });
 
-    gameOfLife.seed({
-                            {1, 1},
-                            {2, 1}
-                    });
+        REQUIRE(gameOfLife.gameGrid[1][1] == 1);
+        REQUIRE(gameOfLife.gameGrid[2][1] == 1);
 
-    REQUIRE(gameOfLife.gameGrid[1][1] == 1);
-    REQUIRE(gameOfLife.gameGrid[2][1] == 1);
-
-    REQUIRE(containsOnly(gameOfLife, {{1, 1},
-                                      {2, 1}}));
-}
+        REQUIRE(containsOnly(gameOfLife, {{1, 1},
+                                          {2, 1}}));
+    }
 
 /*
  * 0 | 0 0 0 0 0
@@ -92,11 +60,6 @@ TEST_CASE("The grid can be seeded") {
  *   -----------
  *     0 1 2 3 4
  */
-
-
-TEST_CASE("The Game Of Life", "[Rules]") {
-    GameOfLife gameOfLife{};
-
 
     SECTION("seeding only 2 adjacent cells will die", "[Underpopulation]") {
 /*
