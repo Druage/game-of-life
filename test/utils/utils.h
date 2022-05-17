@@ -1,5 +1,5 @@
+#include "../../src/GameOfLife_T.h"
 #include <set>
-#include "../../GameOfLife_T.h"
 
 namespace test {
 

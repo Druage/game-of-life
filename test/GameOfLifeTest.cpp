@@ -1,7 +1,7 @@
 #define CATCH_CONFIG_MAIN
 #define LOG_STATE
 
-#include "../GameOfLife_T.h"
+#include "../src/GameOfLife_T.h"
 #include "catch.hpp"
 #include "utils/utils.h"
 
