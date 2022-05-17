@@ -7,6 +7,11 @@
 
 using namespace test;
 
+const int WIDTH = 5;
+const int HEIGHT = 5;
+
+using GameOfLife = GameOfLife_T<WIDTH, HEIGHT>;
+
 TEST_CASE("The Game Of Life", "[Rules]") {
     GameOfLife gameOfLife{};
 

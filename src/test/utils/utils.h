@@ -3,32 +3,31 @@
 
 namespace test {
 
-    const int WIDTH = 5;
-    const int HEIGHT = 5;
+    template<typename TGrid, typename TExpected>
+    bool containsAll(TGrid &grid, TExpected expected) {
 
-    using GameOfLife = GameOfLife_T<WIDTH, HEIGHT>;
-
-    template<typename TExpected>
-    bool containsAll(GameOfLife &state, TExpected expected) {
-        for (auto row: state.gameGrid) {
-            for (auto cell: row) {
-                if (cell != expected) {
+        for (int row = 0; row < grid.rows(); ++row) {
+            for (int col = 0; col < grid.cols(); ++col) {
+                if (grid[row][col] != expected) {
                     return false;
                 }
+
             }
+
         }
 
         return true;
     }
 
-    bool containsOnly(GameOfLife &state, std::set<std::pair<int, int>> values) {
+    template<typename TGrid>
+    bool containsOnly(TGrid &grid, std::set<std::pair<int, int>> &&values) {
 
         int sum = 0;
-        for (int w = 0; w < WIDTH; ++w) {
-            for (int h = 0; h < HEIGHT; ++h) {
-                const auto cell = state.gameGrid[w][h];
+        for (int r = 0; r < grid.rows(); ++r) {
+            for (int c = 0; c < grid.cols(); ++c) {
+                const auto cell = grid.gameGrid[r][c];
                 if (cell) {
-                    const auto containsCellInValues = values.find(std::pair<int, int>(w, h)) != values.end();
+                    const auto containsCellInValues = values.find(std::pair<int, int>(r, c)) != values.end();
                     if (!containsCellInValues) {
                         return false;
                     }
