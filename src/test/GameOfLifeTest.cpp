@@ -270,7 +270,6 @@ TEST_CASE("The Game Of Life", "[Rules]") {
  *       0 1 2 3 4
  */
 
-
         gameOfLife.seed({
                                 {0, 0},
                                 {1, 0},

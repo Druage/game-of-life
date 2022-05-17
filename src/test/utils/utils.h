@@ -8,7 +8,8 @@ namespace test {
 
     using GameOfLife = GameOfLife_T<WIDTH, HEIGHT>;
 
-    bool containsAll(GameOfLife &state, int expected) {
+    template<typename TExpected>
+    bool containsAll(GameOfLife &state, TExpected expected) {
         for (auto row: state.gameGrid) {
             for (auto cell: row) {
                 if (cell != expected) {
