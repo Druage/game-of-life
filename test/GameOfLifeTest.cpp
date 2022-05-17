@@ -1,9 +1,9 @@
 #define CATCH_CONFIG_MAIN
 #define LOG_STATE
 
-#include "../src/GameOfLife_T.h"
-#include "catch.hpp"
-#include "utils/utils.h"
+#include "../lib/GameOfLife_T.h"
+#include "include/catch.hpp"
+#include "include/utils.h"
 
 using namespace test;
 

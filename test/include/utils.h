@@ -1,4 +1,4 @@
-#include "../../src/GameOfLife_T.h"
+#include "../../lib/GameOfLife_T.h"
 #include <set>
 
 namespace test {
