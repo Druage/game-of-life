@@ -7,13 +7,6 @@
 
 template <int TRows, int TCols> class GameOfLife_T {
 
-  enum Ops {
-    Underpopulation,
-    Overpopulation,
-    Reproduction,
-    All = Underpopulation & Overpopulation & Reproduction
-  };
-
   using CollectedCells = std::vector<std::pair<int, int>>;
   int m_rows{TRows};
   int m_cols{TCols};
@@ -23,7 +16,7 @@ public:
 
   void seed(std::initializer_list<std::pair<int, int>> values);
 
-  void tick(Ops ops = Ops::All);
+  void tick();
 
   void print();
 
@@ -59,8 +52,7 @@ void GameOfLife_T<TWidth, THeight>::seed(
   }
 }
 
-template <int TWidth, int THeight>
-void GameOfLife_T<TWidth, THeight>::tick(Ops ops) {
+template <int TWidth, int THeight> void GameOfLife_T<TWidth, THeight>::tick() {
 
 #ifdef LOG_STATE
   std::cout << "Before:" << std::endl;
