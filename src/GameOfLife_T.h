@@ -5,11 +5,15 @@
 #include <array>
 #include <functional>
 
-template<int TWidth, int THeight>
+template<int TRows, int TCols>
 class GameOfLife_T {
+
     using CollectedCells = std::vector<std::pair<int, int>>;
+    int m_rows{TRows};
+    int m_cols{TCols};
+
 public:
-    std::array<std::array<int, TWidth>, THeight> gameGrid;
+    std::array<std::array<int, TRows>, TCols> gameGrid;
 
     void seed(std::initializer_list<std::pair<int, int>> values);
 
@@ -17,6 +21,16 @@ public:
 
     void print();
 
+public:
+    std::array<int, TRows> &operator[](int row);
+
+    [[nodiscard]] int size() const;
+
+    [[nodiscard]] int rows() const;
+
+    [[nodiscard]] int cols() const;
+
+private:
     inline bool cellIsOverpopulated(int cellSum);
 
     inline bool cellIsUnderpopulated(int cellSum);
@@ -135,4 +149,24 @@ void GameOfLife_T<TWidth, THeight>::collectCellsIf(int row, int col, GameOfLife_
     if (collectCondition(cellSum)) {
         destination.emplace_back(row, col);
     }
+}
+
+template<int TRows, int TCols>
+std::array<int, TRows> &GameOfLife_T<TRows, TCols>::operator[](int row) {
+    return gameGrid[row];
+}
+
+template<int TRows, int TCols>
+int GameOfLife_T<TRows, TCols>::size() const {
+    return m_rows * m_cols;
+}
+
+template<int TRows, int TCols>
+int GameOfLife_T<TRows, TCols>::rows() const {
+    return m_rows;
+}
+
+template<int TRows, int TCols>
+int GameOfLife_T<TRows, TCols>::cols() const {
+    return m_cols;
 }

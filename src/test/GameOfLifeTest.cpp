@@ -10,7 +10,6 @@ using namespace test;
 TEST_CASE("The Game Of Life", "[Rules]") {
     GameOfLife gameOfLife{};
 
-
 /*
  * 0 | 0 0 0 0 0
  * 1 | 0 0 0 0 0
@@ -21,9 +20,10 @@ TEST_CASE("The Game Of Life", "[Rules]") {
  *     0 1 2 3 4
  */
 
-
     SECTION("The grid is the correct size and initialized to 0") {
-        REQUIRE(gameOfLife.gameGrid.size() * gameOfLife.gameGrid.front().size() == WIDTH * HEIGHT);
+        REQUIRE(gameOfLife.rows() == WIDTH);
+        REQUIRE(gameOfLife.cols() == HEIGHT);
+        REQUIRE(gameOfLife.size() == WIDTH * HEIGHT);
         REQUIRE(containsAll(gameOfLife, 0));
     }
 
@@ -44,8 +44,8 @@ TEST_CASE("The Game Of Life", "[Rules]") {
                                 {2, 1}
                         });
 
-        REQUIRE(gameOfLife.gameGrid[1][1] == 1);
-        REQUIRE(gameOfLife.gameGrid[2][1] == 1);
+        REQUIRE(gameOfLife[1][1] == 1);
+        REQUIRE(gameOfLife[2][1] == 1);
 
         REQUIRE(containsOnly(gameOfLife, {{1, 1},
                                           {2, 1}}));
