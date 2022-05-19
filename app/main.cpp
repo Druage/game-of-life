@@ -1,8 +1,10 @@
 #include <iostream>
-
+#include <random>
+#include <sstream>
 #include <SDL.h>
 
 #include <GameOfLife_T.h>
+#include <fstream>
 #include "include/seeds.h"
 #include "include/colors.h"
 
@@ -67,6 +69,75 @@ void copyToPixelBuffer(GameOfLife &gameOfLife, uint32_t *pixelStreamBuffer) {
     }
 }
 
+void fillRandomSeeds(GameOfLife &gameOfLife) {
+    std::random_device dev;
+    std::mt19937 rng(dev());
+
+    std::uniform_int_distribution<std::mt19937::result_type> distRow(1, gameOfLife.rows() - 1);
+    std::uniform_int_distribution<std::mt19937::result_type> distCol(1, gameOfLife.cols() - 1);
+    std::uniform_int_distribution<std::mt19937::result_type> distBlob(1, 8);
+
+    std::vector<std::pair<int, int>> createdSeeds;
+    for (int i = 0; i < 15; ++i) {
+        auto pair = std::make_pair(distRow(rng), distCol(rng));
+        createdSeeds.emplace_back(pair);
+
+        // Generate a blob with the starting coords.
+        // Start from top left corner and trace around the image like a CRT scanline.
+        auto edgesToDraw = distBlob(rng);
+        for (auto e = distBlob.min(); e < edgesToDraw; ++e) {
+            if (e == 1) {
+                createdSeeds.emplace_back(std::make_pair(pair.first - e,  pair.second - e));
+            } else if (e == 2) {
+                createdSeeds.emplace_back(std::make_pair(pair.first,  pair.second - e));
+            } else if (e == 3) {
+                createdSeeds.emplace_back(std::make_pair(pair.first + e,  pair.second - e));
+            } else if (e == 4) {
+                createdSeeds.emplace_back(std::make_pair(pair.first - e,  pair.second));
+            } else if (e == 5) {
+                createdSeeds.emplace_back(std::make_pair(pair.first + e,  pair.second));
+            } else if (e == 6) {
+                createdSeeds.emplace_back(std::make_pair(pair.first - e,  pair.second + e));
+            } else if (e == 7) {
+                createdSeeds.emplace_back(std::make_pair(pair.first,  pair.second + e));
+            } else if (e == 8) {
+                createdSeeds.emplace_back(std::make_pair(pair.first + e,  pair.second + e));
+            }
+        }
+    }
+
+    gameOfLife.seed(createdSeeds.begin(), createdSeeds.end());
+
+    std::stringstream jsonStringBuilder;
+
+    jsonStringBuilder << "{\n";
+    jsonStringBuilder << "\t\"seeds\": [\n";
+    for (int i=0; i < createdSeeds.size(); ++i ) {
+        auto seed = createdSeeds[i];
+        jsonStringBuilder << "\t\t{" <<
+        "\"x\": " << "\"" << seed.first << "\"" << ", "
+        << "\"y\": " << "\"" << seed.second << "\""
+        << "}";
+
+        if (i < createdSeeds.size() - 1 ) {
+            jsonStringBuilder << ",";
+        }
+
+        jsonStringBuilder << "\n";
+    }
+
+    jsonStringBuilder << "\t]\n";
+    jsonStringBuilder << "}";
+
+    auto jsonString = jsonStringBuilder.str();
+
+    std::ofstream outStream("seeds.json", std::ios_base::out);
+
+    outStream.write(jsonString.c_str(), jsonString.size());
+    outStream.close();
+
+}
+
 int main(int argc, char *argv[]) {
     (void) argc;
     (void) argv;
@@ -74,7 +145,7 @@ int main(int argc, char *argv[]) {
     auto [window, renderer] = initSDL();
 
     GameOfLife gameOfLife;
-    gameOfLife.seed(INTERESTING_SEED);
+    fillRandomSeeds(gameOfLife);
 
     uint32_t pixelStreamBuffer[gameOfLife.width() * gameOfLife.height()];
 

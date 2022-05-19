@@ -19,6 +19,9 @@ public:
 
     void seed(std::initializer_list<std::pair<int, int>> values);
 
+    template<typename Iter>
+    void seed(Iter first, Iter last);
+
     void tick();
 
     void print();
@@ -57,11 +60,7 @@ private:
 template<int TWidth, int THeight, typename T>
 void GameOfLife_T<TWidth, THeight, T>::seed(
         std::initializer_list<std::pair<int, int>> values) {
-    for (const auto &coords: values) {
-        auto x = coords.first;
-        auto y = coords.second;
-        gameGrid[x][y] = 1;
-    }
+    seed(values.begin(), values.end());
 }
 
 template<int TWidth, int THeight, typename T>
@@ -200,4 +199,14 @@ int GameOfLife_T<TRows, TCols, T>::width() const {
 template<int TRows, int TCols, typename T>
 int GameOfLife_T<TRows, TCols, T>::height() const {
     return rows();
+}
+
+template<int TRows, int TCols, typename T>
+template<typename Iter>
+void GameOfLife_T<TRows, TCols, T>::seed(Iter first, Iter last) {
+    for (auto &it = first; it != last; ++it) {
+        auto x = it->first;
+        auto y = it->second;
+        gameGrid[x][y] = 1;
+    }
 }
