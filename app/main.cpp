@@ -58,28 +58,14 @@ void paint(SDL_Renderer *renderer, uint32_t *pixelStreamBuffer, size_t width, si
     SDL_Texture *bmpTex = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_FreeSurface(surface);
 
-    //Make a target texture to render too
-    SDL_Texture *texTarget = SDL_CreateTexture(renderer,
-                                               SDL_PIXELFORMAT_RGB888,
-                                               SDL_TEXTUREACCESS_TARGET,
-                                               WIN_WIDTH,
-                                               WIN_HEIGHT);
-
-    if (!texTarget) {
-        std::cout << SDL_GetError() << std::endl;
-    }
-    //Now render to the texture
-    SDL_SetRenderTarget(renderer, texTarget);
+    // clear screen
     SDL_RenderClear(renderer);
-    SDL_RenderCopy(renderer, bmpTex, NULL, NULL);
-    //Detach the texture
-    SDL_SetRenderTarget(renderer, NULL);
 
-    //Now render the texture target to our screen, but upside down
-    SDL_RenderClear(renderer);
-    SDL_RenderCopy(renderer, texTarget, NULL, NULL);
+    // render texture to screen
+    SDL_RenderCopy(renderer, bmpTex, nullptr, nullptr);
+
+    // update screen
     SDL_RenderPresent(renderer);
-
 }
 
 int main(int argc, char *argv[]) {
@@ -99,6 +85,22 @@ int main(int argc, char *argv[]) {
                             {1, 3},
                             {2, 3},
                             {3, 3},
+
+                            {12, 11},
+
+                            {13, 12},
+
+                            {11, 13},
+                            {12, 13},
+                            {13, 13},
+
+                            {12, 11},
+
+                            {10, 12},
+
+                            {11, 13},
+                            {12, 13},
+                            {13, 13},
 
                     });
 
