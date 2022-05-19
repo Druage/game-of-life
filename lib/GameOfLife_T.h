@@ -36,6 +36,10 @@ public:
 
     [[nodiscard]] int cols() const;
 
+    [[nodiscard]] int width() const;
+
+    [[nodiscard]] int height() const;
+
     T value_type;
 private:
     inline bool cellIsOverpopulated(int cellSum);
@@ -186,4 +190,14 @@ GameOfLife_T<TRows, TCols, T>::GameOfLife_T() {
             gameGrid[row][col] = 0;
         }
     }
+}
+
+template<int TRows, int TCols, typename T>
+int GameOfLife_T<TRows, TCols, T>::width() const {
+    return cols();
+}
+
+template<int TRows, int TCols, typename T>
+int GameOfLife_T<TRows, TCols, T>::height() const {
+    return rows();
 }

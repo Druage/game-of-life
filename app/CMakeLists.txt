@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 find_package(SDL2 REQUIRED)
 
-add_executable(${PROJECT_NAME} main.cpp ../lib/GameOfLife_T.cpp ../lib/GameOfLife_T.h seeds.h colors.h)
+add_executable(${PROJECT_NAME} main.cpp ../lib/GameOfLife_T.cpp ../lib/GameOfLife_T.h include/seeds.h include/colors.h)
 
 if (SDL2_FOUND)
     message(STATUS "SDL2 Found, Linking...")

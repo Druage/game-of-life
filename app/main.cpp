@@ -3,15 +3,15 @@
 #include <SDL.h>
 
 #include <GameOfLife_T.h>
-#include "seeds.h"
-#include "colors.h"
+#include "include/seeds.h"
+#include "include/colors.h"
 
 using GameOfLife = GameOfLife_T<100, 100>;
 
 const int WIN_WIDTH = 680;
 const int WIN_HEIGHT = 480;
 
-SDL_Window *initSDL() {
+std::pair<SDL_Window *, SDL_Renderer *> initSDL() {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         std::cout << "Failed to initialize the SDL2 library\n";
         exit(-1);
@@ -29,17 +29,19 @@ SDL_Window *initSDL() {
         exit(-1);
     }
 
-    return window;
+    auto *renderer = SDL_CreateRenderer(window, -1,
+                                        SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
 
+    return std::make_pair(window, renderer);
 }
 
-void paint(SDL_Renderer *renderer, uint32_t *pixelStreamBuffer, size_t width, size_t height) {
+void paint(SDL_Renderer *renderer, uint32_t *pixelStreamBuffer, int width, int height) {
 
     auto *surface = SDL_CreateRGBSurfaceWithFormatFrom(pixelStreamBuffer,
                                                        width,
                                                        height,
                                                        sizeof(uint32_t),
-                                                       sizeof(uint32_t) * width,
+                                                       static_cast<int>(sizeof(uint32_t) * width),
                                                        SDL_PIXELFORMAT_RGB888);
 
     if (!surface) {
@@ -59,7 +61,7 @@ void paint(SDL_Renderer *renderer, uint32_t *pixelStreamBuffer, size_t width, si
     SDL_RenderPresent(renderer);
 }
 
-void transformToPixelBuffer(GameOfLife &gameOfLife, uint32_t *pixelStreamBuffer) {
+void copyToPixelBuffer(GameOfLife &gameOfLife, uint32_t *pixelStreamBuffer) {
     for (int row = 0; row < gameOfLife.rows(); ++row) {
         for (int col = 0; col < gameOfLife.cols(); ++col) {
             pixelStreamBuffer[(row * gameOfLife.cols()) + col] =
@@ -72,24 +74,19 @@ int main(int argc, char *argv[]) {
     (void) argc;
     (void) argv;
 
-    auto window = initSDL();
-    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1,
-                                                SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
+    auto [window, renderer] = initSDL();
 
     GameOfLife gameOfLife;
     gameOfLife.seed(INTERESTING_SEED);
 
-    size_t pixelBuffWidth = gameOfLife.cols();
-    size_t pixelBuffHeight = gameOfLife.rows();
-
-    uint32_t pixelStreamBuffer[pixelBuffWidth * pixelBuffHeight];
+    uint32_t pixelStreamBuffer[gameOfLife.width() * gameOfLife.height()];
 
     bool run = true;
     while (run) {
 
-        transformToPixelBuffer(gameOfLife, pixelStreamBuffer);
+        copyToPixelBuffer(gameOfLife, pixelStreamBuffer);
 
-        paint(renderer, pixelStreamBuffer, pixelBuffWidth, pixelBuffHeight);
+        paint(renderer, pixelStreamBuffer, gameOfLife.width(), gameOfLife.width());
 
         SDL_Event event;
         if (SDL_PollEvent(&event)) {
