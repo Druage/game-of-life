@@ -8,9 +8,6 @@
 
 using GameOfLife = GameOfLife_T<100, 100>;
 
-const int WIN_WIDTH = 680;
-const int WIN_HEIGHT = 480;
-
 std::pair<SDL_Window *, SDL_Renderer *> initSDL() {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         std::cout << "Failed to initialize the SDL2 library\n";
@@ -20,8 +17,8 @@ std::pair<SDL_Window *, SDL_Renderer *> initSDL() {
     SDL_Window *window = SDL_CreateWindow("The Game Of Life",
                                           SDL_WINDOWPOS_CENTERED,
                                           SDL_WINDOWPOS_CENTERED,
-                                          WIN_WIDTH,
-                                          WIN_HEIGHT,
+                                          640,
+                                          480,
                                           SDL_WINDOW_SHOWN);
 
     if (!window) {
