@@ -4,7 +4,7 @@
 
 #include <GameOfLife_T.h>
 
-using GameOfLife = GameOfLife_T<10, 10>;
+using GameOfLife = GameOfLife_T<100, 100>;
 
 const int WIN_WIDTH = 680;
 const int WIN_HEIGHT = 480;
@@ -77,7 +77,7 @@ void paint(SDL_Renderer *renderer, uint32_t *pixelStreamBuffer, size_t width, si
 
     //Now render the texture target to our screen, but upside down
     SDL_RenderClear(renderer);
-    SDL_RenderCopyEx(renderer, texTarget, NULL, NULL, 0, NULL, SDL_FLIP_NONE);
+    SDL_RenderCopy(renderer, texTarget, NULL, NULL);
     SDL_RenderPresent(renderer);
 
 }
@@ -91,8 +91,16 @@ int main(int argc, char *argv[]) {
                                                 SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
 
     GameOfLife gameOfLife;
-    gameOfLife.seed({{1, 1}});
-    gameOfLife.print();
+    gameOfLife.seed({
+                            {2, 1},
+
+                            {3, 2},
+
+                            {1, 3},
+                            {2, 3},
+                            {3, 3},
+
+                    });
 
     size_t pixelBuffWidth = gameOfLife.cols();
     size_t pixelBuffHeight = gameOfLife.rows();
@@ -104,7 +112,8 @@ int main(int argc, char *argv[]) {
 
         for (int row = 0; row < gameOfLife.rows(); ++row) {
             for (int col = 0; col < gameOfLife.cols(); ++col) {
-                pixelStreamBuffer[(row * gameOfLife.cols()) + col] = gameOfLife[row][col] == 1 ? COLOR_WHITE : COLOR_BLACK;
+                pixelStreamBuffer[(row * gameOfLife.cols()) + col] =
+                        gameOfLife[row][col] == 1 ? COLOR_WHITE : COLOR_BLACK;
             }
         }
 
@@ -121,7 +130,7 @@ int main(int argc, char *argv[]) {
             }
         }
 
-        SDL_Delay(3000);
+        SDL_Delay(100);
         gameOfLife.tick();
     }
 

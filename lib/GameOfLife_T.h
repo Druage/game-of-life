@@ -183,7 +183,7 @@ template<int TRows, int TCols, typename T>
 GameOfLife_T<TRows, TCols, T>::GameOfLife_T() {
     for (int row = 0; row < TRows; ++row) {
         for (int col = 0; col < TCols; ++col) {
-            gameGrid[row][col] = static_cast<T>(1);
+            gameGrid[row][col] = 0;
         }
     }
 }
