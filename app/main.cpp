@@ -3,14 +3,13 @@
 #include <SDL.h>
 
 #include <GameOfLife_T.h>
+#include "seeds.h"
+#include "colors.h"
 
 using GameOfLife = GameOfLife_T<100, 100>;
 
 const int WIN_WIDTH = 680;
 const int WIN_HEIGHT = 480;
-
-const uint32_t COLOR_BLACK = 0x000000;
-const uint32_t COLOR_WHITE = 0xFFFFFF;
 
 SDL_Window *initSDL() {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -18,7 +17,7 @@ SDL_Window *initSDL() {
         exit(-1);
     }
 
-    SDL_Window *window = SDL_CreateWindow("SDL2 Window",
+    SDL_Window *window = SDL_CreateWindow("The Game Of Life",
                                           SDL_WINDOWPOS_CENTERED,
                                           SDL_WINDOWPOS_CENTERED,
                                           WIN_WIDTH,
@@ -34,15 +33,7 @@ SDL_Window *initSDL() {
 
 }
 
-// TODO - create a white image that can be shown on screen using the Mono pixel format
 void paint(SDL_Renderer *renderer, uint32_t *pixelStreamBuffer, size_t width, size_t height) {
-
-//    SDL_Surface *bmpSurf = SDL_CreateRGBSurfaceWithFormatFrom((void *) buffCopy,
-//                                                              width,
-//                                                              height,
-//                                                              depth,
-//                                                              depth * width,
-//                                                              SDL_PIXELFORMAT_INDEX1MSB);
 
     auto *surface = SDL_CreateRGBSurfaceWithFormatFrom(pixelStreamBuffer,
                                                        width,
@@ -55,17 +46,26 @@ void paint(SDL_Renderer *renderer, uint32_t *pixelStreamBuffer, size_t width, si
         std::cout << SDL_GetError() << std::endl;
     }
 
-    SDL_Texture *bmpTex = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_FreeSurface(surface);
 
     // clear screen
     SDL_RenderClear(renderer);
 
     // render texture to screen
-    SDL_RenderCopy(renderer, bmpTex, nullptr, nullptr);
+    SDL_RenderCopy(renderer, texture, nullptr, nullptr);
 
     // update screen
     SDL_RenderPresent(renderer);
+}
+
+void transformToPixelBuffer(GameOfLife &gameOfLife, uint32_t *pixelStreamBuffer) {
+    for (int row = 0; row < gameOfLife.rows(); ++row) {
+        for (int col = 0; col < gameOfLife.cols(); ++col) {
+            pixelStreamBuffer[(row * gameOfLife.cols()) + col] =
+                    gameOfLife[row][col] == 1 ? COLOR_WHITE : COLOR_BLACK;
+        }
+    }
 }
 
 int main(int argc, char *argv[]) {
@@ -77,32 +77,7 @@ int main(int argc, char *argv[]) {
                                                 SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
 
     GameOfLife gameOfLife;
-    gameOfLife.seed({
-                            {2, 1},
-
-                            {3, 2},
-
-                            {1, 3},
-                            {2, 3},
-                            {3, 3},
-
-                            {12, 11},
-
-                            {13, 12},
-
-                            {11, 13},
-                            {12, 13},
-                            {13, 13},
-
-                            {12, 11},
-
-                            {10, 12},
-
-                            {11, 13},
-                            {12, 13},
-                            {13, 13},
-
-                    });
+    gameOfLife.seed(INTERESTING_SEED);
 
     size_t pixelBuffWidth = gameOfLife.cols();
     size_t pixelBuffHeight = gameOfLife.rows();
@@ -112,12 +87,7 @@ int main(int argc, char *argv[]) {
     bool run = true;
     while (run) {
 
-        for (int row = 0; row < gameOfLife.rows(); ++row) {
-            for (int col = 0; col < gameOfLife.cols(); ++col) {
-                pixelStreamBuffer[(row * gameOfLife.cols()) + col] =
-                        gameOfLife[row][col] == 1 ? COLOR_WHITE : COLOR_BLACK;
-            }
-        }
+        transformToPixelBuffer(gameOfLife, pixelStreamBuffer);
 
         paint(renderer, pixelStreamBuffer, pixelBuffWidth, pixelBuffHeight);
 
